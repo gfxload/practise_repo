@@ -1,0 +1,41 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Prevent access to sensitive files
+    RewriteRule ^\.env - [F,L]
+    RewriteRule ^composer\.(lock|json)$ - [F,L]
+    RewriteRule ^package(-lock)?\.json$ - [F,L]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Deny access to sensitive files
+<FilesMatch "^\.env|composer\.(lock|json)$|package(-lock)?\.json$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable directory browsing
+Options -Indexes
+
+# Deny access to files with sensitive extensions
+<FilesMatch "\.(env|config|ini|log|sh|sql|lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
